@@ -10,11 +10,10 @@ def evaluate_population(X, y, population):
     return population
 
 
-def evolution_strategy(config, tree_model, X, y, lamb, mu, n_gens, depth,
-                       simulation_id=0, max_gens_wout_improvement=100,
-                       n_jobs=1):
+def evolution_strategy(config, tree_model, params, X, y, lamb, mu, n_gens, depth,
+                       simulation_id=0, max_gens_wout_improvement=100, n_jobs=1):
 
-    population = [tree_model.generate_random(config, depth, X) for _ in range(lamb)]
+    population = [tree_model.generate_random(config, depth, params, X) for _ in range(lamb)]
     for individual in population:
         individual.optimize_leaves(X, y)
         individual.fitness = individual.evaluate(X, y)

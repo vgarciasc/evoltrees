@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from evoltree.dataset_configs import get_config, load_dataset
 from evoltree.evolution_strategy import evolution_strategy
 from evoltree.model_tree import ModelTree
+from sklearn.linear_model import LinearRegression
 
 if __name__ == "__main__":
     lamb = 100
@@ -16,7 +17,8 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=2)
     X_test, _, y_test, _ = train_test_split(X_test, y_test, test_size=0.5, random_state=2)
 
-    tree = evolution_strategy(config, ModelTree, X_train, y_train, lamb, mu, n_generations, depth, n_jobs=8)
+    params = { "model": LinearRegression }
+    tree = evolution_strategy(config, ModelTree, params, X_train, y_train, lamb, mu, n_generations, depth, n_jobs=8)
 
     print(tree)
     print(f"Train MSE: {- tree.evaluate(X_train, y_train)}")

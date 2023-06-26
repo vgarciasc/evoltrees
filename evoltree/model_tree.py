@@ -5,12 +5,12 @@ from evoltree.tree import Tree
 
 
 class ModelTree(Tree):
-    def __init__(self, *args, **kwargs):
-        self.model = LinearRegression
+    def __init__(self, model, *args, **kwargs):
+        self.model = model
         super().__init__(*args, **kwargs)
 
     def copy(self):
-        return ModelTree(self.config, self.depth, self.attributes.copy(),
+        return ModelTree(self.model, self.config, self.depth, self.attributes.copy(),
                          self.thresholds.copy(), self.labels.copy())
 
     def evaluate(self, X, y):
@@ -31,12 +31,14 @@ class ModelTree(Tree):
                 self.labels[i].fit(pred_leaves_inputs[i], pred_leaves_labels[i])
 
     @staticmethod
-    def generate_random(config, depth, X=None):
+    def generate_random(config, depth, params=None, X=None):
         if "attr_metadata" not in config:
             if X is not None:
                 config["attr_metadata"] = [(np.min(X_i), np.max(X_i)) for X_i in np.transpose(X.astype(np.float32))]
             else:
                 raise ValueError("Should pass X to generate_random to determine min and max values of attributes")
+
+        model = LinearRegression if "model" not in params else params["model"]
 
         attributes = []
         thresholds = []
@@ -50,9 +52,9 @@ class ModelTree(Tree):
 
         attributes = np.array(attributes, dtype=np.int64)
         thresholds = np.array(thresholds, dtype=np.float64)
-        labels = [LinearRegression() for _ in range(2 ** depth)]
+        labels = [model() for _ in range(2 ** depth)]
 
-        return ModelTree(config, depth, attributes, thresholds, labels)
+        return ModelTree(model, config, depth, attributes, thresholds, labels)
 
     def __str__(self):
         stack = [(0, 0, self.depth - 1)]
@@ -64,9 +66,12 @@ class ModelTree(Tree):
 
             if depth == -1:
                 model = self.labels[leaf_id]
-                output += f"y = {model.intercept_:.5f} "
-                for i in range(len(model.coef_)):
-                    output += f"+ {model.coef_[i]:.5f} * x{i} "
+                if type(model) == LinearRegression:
+                    output += f"y = {model.intercept_:.5f} "
+                    for i in range(len(model.coef_)):
+                        output += f"+ {model.coef_[i]:.5f} * x{i} "
+                else:
+                    output += str(model)
             else:
                 output += self.config['attributes'][self.attributes[node_id]]
                 output += " <= "

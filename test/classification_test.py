@@ -16,7 +16,7 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=2, stratify=y)
     X_test, _, y_test, _ = train_test_split(X_test, y_test, test_size=0.5, random_state=2, stratify=y_test)
 
-    tree = evolution_strategy(config, ClassificationTree, X_train, y_train, lamb, mu, n_generations, depth, n_jobs=8)
+    tree = evolution_strategy(config, ClassificationTree, {}, X_train, y_train, lamb, mu, n_generations, depth, n_jobs=8)
 
     print(f"Train accuracy: {tree.evaluate(X_train, y_train)}")
     print(f"Test accuracy: {tree.evaluate(X_test, y_test)}")

@@ -25,7 +25,7 @@ class RegressionTree(Tree):
                 self.labels[i] = np.mean(pred_leaves_labels[i])
 
     @staticmethod
-    def generate_random(config, depth, X=None):
+    def generate_random(config, depth, params=None, X=None):
         if "attr_metadata" not in config:
             if X is not None:
                 config["attr_metadata"] = [(np.min(X_i), np.max(X_i)) for X_i in np.transpose(X.astype(np.float32))]
