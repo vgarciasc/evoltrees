@@ -66,14 +66,14 @@ def evolution_strategy(config, tree_model, params, X, y, lamb, mu, n_gens, depth
         fitnesses = [ind.fitness for ind in population]
         full_log.append((fitnesses, best_fitness, best_tree))
 
-        if verbose:
-            print(f"Simul. {simulation_id} // Generation {curr_gen} (last improv. {last_improvement_gen_id}) // Best fitness: {best_fitness}")
-
         # Early stopping
         if has_improved:
             last_improvement_gen_id = curr_gen
             if max_gens_wout_improvement is None or (curr_gen - last_improvement_gen_id) > max_gens_wout_improvement:
                 break
+
+        if verbose:
+            print(f"Simulation {simulation_id} // Generation {curr_gen} (last improv. {last_improvement_gen_id}) // Best fitness: {best_fitness}")
 
     return best_tree, full_log
 
