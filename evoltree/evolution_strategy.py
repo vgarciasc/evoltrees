@@ -61,7 +61,7 @@ def evolution_strategy(config, tree_model, params, X, y, lamb, mu, n_gens, depth
         if has_improved:
             last_improvement_gen_id = curr_gen
 
-            if (curr_gen - last_improvement_gen_id) > max_gens_wout_improvement:
+            if max_gens_wout_improvement is None or (curr_gen - last_improvement_gen_id) > max_gens_wout_improvement:
                 print(f"Stopping early at gen #{curr_gen} (no improv. for {max_gens_wout_improvement} generations.")
                 break
 
@@ -98,7 +98,7 @@ def evolution_strategy_tracked(config, tree_model, params, X, y, lamb, mu, n_gen
             if has_improved:
                 last_improvement_gen_id = curr_gen
 
-                if (curr_gen - last_improvement_gen_id) > max_gens_wout_improvement:
+                if max_gens_wout_improvement is None or (curr_gen - last_improvement_gen_id) > max_gens_wout_improvement:
                     print(f"Stopping early at gen #{curr_gen} (no improv. for {max_gens_wout_improvement} generations.")
                     break
 
