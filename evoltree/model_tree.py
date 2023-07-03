@@ -14,12 +14,12 @@ class ModelTree(Tree):
         return ModelTree(self.model, self.config, self.depth, self.attributes.copy(),
                          self.thresholds.copy(), self.labels.copy())
 
-    def predict(self, x):
-        return self.labels[get_leaf(x, self.attributes, self.thresholds, self.depth)].predict([x])[0]
-
-    def predict_batch(self, X):
-        l = get_leaves_dataset(X, self.attributes, self.thresholds, self.depth)
-        return [l_i.predict([x_i])[0] for x_i, l_i in zip(X, self.labels[np.argmax(l, axis=1)])]
+    def predict(self, X):
+        try:
+            l = get_leaves_dataset(X, self.attributes, self.thresholds, self.depth)
+            return [l_i.predict([x_i])[0] for x_i, l_i in zip(X, self.labels[np.argmax(l, axis=1)])]
+        except ValueError:
+            return self.labels[get_leaf(X, self.attributes, self.thresholds, self.depth)].predict([X])[0]
 
     def evaluate(self, X, y):
         pred = [self.predict(x) for x in X]
