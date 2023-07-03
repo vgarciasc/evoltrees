@@ -10,12 +10,12 @@ class Tree:
         self.thresholds = thresholds
         self.labels = labels
 
-    def predict(self, x):
-        return self.labels[get_leaf(x, self.attributes, self.thresholds, self.depth)]
-
-    def predict_batch(self, X):
-        l = get_leaves_dataset(X, self.attributes, self.thresholds, self.depth)
-        return self.labels[np.argmax(l, axis=1)]
+    def predict(self, X):
+        try:
+            l = get_leaves_dataset(X, self.attributes, self.thresholds, self.depth)
+            return self.labels[np.argmax(l, axis=1)]
+        except ValueError:
+            return self.labels[get_leaf(X, self.attributes, self.thresholds, self.depth)]
 
     def get_leaf(self, x):
         curr_depth = self.depth - 1

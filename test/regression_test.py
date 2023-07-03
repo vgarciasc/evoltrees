@@ -16,7 +16,7 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=2)
     X_test, _, y_test, _ = train_test_split(X_test, y_test, test_size=0.5, random_state=2)
 
-    tree = evolution_strategy_tracked(config, RegressionTree, {}, X_train, y_train, lamb, mu, n_generations, depth, n_jobs=8)
+    tree, log = evolution_strategy_tracked(config, RegressionTree, {}, X_train, y_train, lamb, mu, n_generations, depth, n_jobs=8)
 
     print(tree)
     print(f"Train MSE: {- tree.evaluate(X_train, y_train)}")

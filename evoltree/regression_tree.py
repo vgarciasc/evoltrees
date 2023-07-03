@@ -11,7 +11,7 @@ class RegressionTree(Tree):
                               self.thresholds.copy(), self.labels.copy())
 
     def evaluate(self, X, y):
-        pred = self.predict_batch(X)
+        pred = self.predict(X)
         return - np.mean((pred - y) ** 2)
 
     def optimize_leaves(self, X, y):

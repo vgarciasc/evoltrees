@@ -11,7 +11,7 @@ class ClassificationTree(Tree):
                                   self.thresholds.copy(), self.labels.copy())
 
     def evaluate(self, X, y):
-        pred = self.predict_batch(X)
+        pred = self.predict(X)
         return np.mean(pred == y)
 
     def optimize_leaves(self, X, y):
