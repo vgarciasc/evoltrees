@@ -22,8 +22,7 @@ class ModelTree(Tree):
             return self.labels[get_leaf(X, self.attributes, self.thresholds, self.depth)].predict([X])[0]
 
     def evaluate(self, X, y):
-        pred = [self.predict(x) for x in X]
-        return - np.mean((pred - y) ** 2)
+        return - np.mean((self.predict(X) - y) ** 2)
 
     def optimize_leaves(self, X, y):
         pred_leaves_idx = [self.get_leaf(x) for x in X]
@@ -60,7 +59,7 @@ class ModelTree(Tree):
 
         attributes = np.array(attributes, dtype=np.int64)
         thresholds = np.array(thresholds, dtype=np.float64)
-        labels = [model() for _ in range(2 ** depth)]
+        labels = np.array([model() for _ in range(2 ** depth)])
 
         return ModelTree(model, config, depth, attributes, thresholds, labels)
 

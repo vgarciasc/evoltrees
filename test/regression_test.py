@@ -7,7 +7,7 @@ from evoltree.regression_tree import RegressionTree
 if __name__ == "__main__":
     lamb = 100
     mu = 10
-    n_generations = 1000
+    n_generations = 10
     depth = 4
 
     config = get_config("qsar")
