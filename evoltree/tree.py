@@ -1,14 +1,37 @@
 import numpy as np
 
 from evoltree.tree_evaluation import get_leaf, get_leaves_dataset
+from evoltree.evolution_strategy import evolution_strategy
 
 class Tree:
-    def __init__(self, config, depth, attributes, thresholds, labels):
+    def __init__(self, config, depth, attributes=None, thresholds=None, labels=None,
+                 lamb=100, mu=10, n_generations=100, n_jobs=1):
+
         self.config = config
         self.depth = depth
+
         self.attributes = attributes
         self.thresholds = thresholds
         self.labels = labels
+
+        self.lamb = lamb
+        self.mu = mu
+        self.n_generations = n_generations
+        self.n_jobs = n_jobs
+
+        self.log = None
+
+    def fit(self, X, y):
+        tree, log = evolution_strategy(self.config, self.__class__, {}, X, y,
+                                       self.lamb, self.mu, self.n_generations,
+                                       self.depth, self.n_jobs)
+
+        self.attributes = tree.attributes
+        self.thresholds = tree.thresholds
+        self.labels = tree.labels
+        self.log = log
+
+        return tree
 
     def predict(self, X):
         try:
