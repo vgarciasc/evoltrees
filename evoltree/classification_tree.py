@@ -1,18 +1,17 @@
 import numpy as np
 from evoltree.tree import Tree
+from evoltree.fitness_functions import calc_accuracy
 
 
 class ClassificationTree(Tree):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fitness_fn = calc_accuracy if self.fitness_fn is None else self.fitness_fn
+
     def copy(self):
         return ClassificationTree(self.config, self.depth, self.attributes.copy(),
                                   self.thresholds.copy(), self.labels.copy())
-
-    def evaluate(self, X, y):
-        pred = self.predict(X)
-        return np.mean(pred == y)
 
     def optimize_leaves(self, X, y):
         pred_leaves_idx = [self.get_leaf(x) for x in X]

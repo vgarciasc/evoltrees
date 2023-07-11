@@ -3,15 +3,20 @@ from sklearn.linear_model import LinearRegression
 
 from evoltree.tree import Tree
 from evoltree.tree_evaluation import get_leaf, get_leaves_dataset
+from evoltree.fitness_functions import calc_mse
 
 
 class ModelTree(Tree):
-    def __init__(self, model, *args, **kwargs):
+    def __init__(self, model, model_params, *args, **kwargs):
         self.model = model
+        self.model_params = model_params
+
         super().__init__(*args, **kwargs)
 
+        self.fitness_fn = calc_mse if self.fitness_fn is None else self.fitness_fn
+
     def copy(self):
-        return ModelTree(self.model, self.config, self.depth, self.attributes.copy(),
+        return ModelTree(self.model, self.model_params, self.config, self.depth, self.attributes.copy(),
                          self.thresholds.copy(), self.labels.copy())
 
     def predict(self, X):
@@ -21,16 +26,13 @@ class ModelTree(Tree):
         except ValueError:
             return self.labels[get_leaf(X, self.attributes, self.thresholds, self.depth)].predict([X])[0]
 
-    def evaluate(self, X, y):
-        return - np.mean((self.predict(X) - y) ** 2)
-
     def optimize_leaves(self, X, y):
         pred_leaves_idx = [self.get_leaf(x) for x in X]
         pred_leaves_inputs = [[X[i] for i in range(len(y)) if pred_leaves_idx[i] == j] for j in range(2 ** self.depth)]
         pred_leaves_labels = [[y[i] for i in range(len(y)) if pred_leaves_idx[i] == j] for j in range(2 ** self.depth)]
 
         for i in range(2 ** self.depth):
-            self.labels[i] = self.model()
+            self.labels[i] = self.model(**self.model_params)
 
             if len(pred_leaves_labels[i]) == 0:
                 self.labels[i].fit(X, y)
@@ -46,6 +48,7 @@ class ModelTree(Tree):
                 raise ValueError("Should pass X to generate_random to determine min and max values of attributes")
 
         model = LinearRegression if "model" not in params else params["model"]
+        model_params = {} if "model_params" not in params else params["model_params"]
 
         attributes = []
         thresholds = []
@@ -59,9 +62,9 @@ class ModelTree(Tree):
 
         attributes = np.array(attributes, dtype=np.int64)
         thresholds = np.array(thresholds, dtype=np.float64)
-        labels = np.array([model() for _ in range(2 ** depth)])
+        labels = np.array([model(**model_params) for _ in range(2 ** depth)])
 
-        return ModelTree(model, config, depth, attributes, thresholds, labels)
+        return ModelTree(model, model_params, config, depth, attributes, thresholds, labels)
 
     def __str__(self):
         stack = [(0, 0, self.depth - 1)]

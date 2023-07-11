@@ -5,11 +5,12 @@ from evoltree.evolution_strategy import evolution_strategy
 
 class Tree:
     def __init__(self, config, depth, attributes=None, thresholds=None, labels=None,
-                 lamb=100, mu=10, n_generations=100, n_jobs=1):
+                 fitness_fn=None, lamb=100, mu=10, n_generations=100, n_jobs=1):
 
         self.config = config
         self.depth = depth
 
+        self.fitness_fn = fitness_fn
         self.attributes = attributes
         self.thresholds = thresholds
         self.labels = labels
@@ -39,6 +40,10 @@ class Tree:
             return self.labels[np.argmax(l, axis=1)]
         except ValueError:
             return self.labels[get_leaf(X, self.attributes, self.thresholds, self.depth)]
+
+    def evaluate(self, X, y):
+        pred = self.predict(X)
+        return self.fitness_fn(y, pred)
 
     def get_leaf(self, x):
         curr_depth = self.depth - 1
