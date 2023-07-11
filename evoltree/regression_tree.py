@@ -7,11 +7,9 @@ class RegressionTree(Tree):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fitness_fn = calc_mse if self.fitness_fn is None else self.fitness_fn
-
     def copy(self):
-        return RegressionTree(self.config, self.depth, self.attributes.copy(),
-                              self.thresholds.copy(), self.labels.copy())
+        return RegressionTree(self.config, self.depth,
+                              self.attributes.copy(), self.thresholds.copy(), self.labels.copy(), self.fitness_fn)
 
     def optimize_leaves(self, X, y):
         pred_leaves_idx = [self.get_leaf(x) for x in X]
@@ -24,12 +22,14 @@ class RegressionTree(Tree):
                 self.labels[i] = np.mean(pred_leaves_labels[i])
 
     @staticmethod
-    def generate_random(config, depth, _=None, X=None):
+    def generate_random(config, depth, params={}, X=None):
         if "attr_metadata" not in config:
             if X is not None:
                 config["attr_metadata"] = [(np.min(X_i), np.max(X_i)) for X_i in np.transpose(X.astype(np.float32))]
             else:
                 raise ValueError("Should pass X to generate_random to determine min and max values of attributes")
+
+        fitness_fn = params.get("fitness_fn", calc_mse)
 
         attributes = []
         thresholds = []
@@ -45,4 +45,4 @@ class RegressionTree(Tree):
         thresholds = np.array(thresholds, dtype=np.float64)
         labels = np.array(labels, dtype=np.float64)
 
-        return RegressionTree(config, depth, attributes, thresholds, labels)
+        return RegressionTree(config, depth, attributes, thresholds, labels, fitness_fn)

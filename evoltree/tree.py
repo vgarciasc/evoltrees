@@ -4,16 +4,17 @@ from evoltree.tree_evaluation import get_leaf, get_leaves_dataset
 from evoltree.evolution_strategy import evolution_strategy
 
 class Tree:
-    def __init__(self, config, depth, attributes=None, thresholds=None, labels=None,
-                 fitness_fn=None, lamb=100, mu=10, n_generations=100, n_jobs=1):
+    def __init__(self, config, depth,
+                 attributes=None, thresholds=None, labels=None, fitness_fn=None,
+                 lamb=100, mu=10, n_generations=100, n_jobs=1):
 
         self.config = config
         self.depth = depth
 
-        self.fitness_fn = fitness_fn
         self.attributes = attributes
         self.thresholds = thresholds
         self.labels = labels
+        self.fitness_fn = fitness_fn
 
         self.lamb = lamb
         self.mu = mu
